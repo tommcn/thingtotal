@@ -1,4 +1,3 @@
-from jsonschema.validators import validators
 from rest_framework import serializers
 
 from .models import Stream
