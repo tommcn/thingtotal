@@ -134,5 +134,5 @@ CORS_ORIGIN_ALLOW_ALL = True  # Allow all origins
 
 
 INTERNAL_IPS = [
-    '127.0.0.1',
+    "127.0.0.1",
 ]
