@@ -1,11 +1,13 @@
+from jsonschema.validators import validators
 from rest_framework import serializers
 
 from .models import Stream
+from .validators import FieldsValueValidator
 
 
 # Stream serializer
 class StreamSerializer(serializers.ModelSerializer):
-    fields = serializers.JSONField()
+    fields = serializers.JSONField(validators=[FieldsValueValidator])
 
     class Meta:
         model = Stream
