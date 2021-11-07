@@ -1,25 +1,10 @@
+import json
 import jsonschema
 from jsonschema import validate
 from rest_framework import serializers
 
-schema = {
-    "$schema": "http://json-schema.org/draft-04/schema#",
-    "type": "array",
-    "items": [
-        {
-            "type": "object",
-            "properties": {
-                "name": {"type": "string"},
-                "desc": {"type": "string"},
-                "type": {"type": "string"},
-            },
-            "required": [
-                "name",
-                "desc",
-            ],
-        },
-    ],
-}
+with open("stream/schema/json-schema-v7.json", "r") as f:
+    schema = json.load(f)
 
 
 def FieldsValueValidator(value):

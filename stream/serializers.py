@@ -1,22 +1,14 @@
-import bson
 
 from rest_framework import serializers
 
 from .models import Stream, Entry
 from .validators import FieldsValueValidator
-
-
-class ObjectIDField(serializers.Field):
-    def to_representation(self, value):
-        return str(value)
-
-    def to_internal_value(self, data):
-        return bson.ObjectId(data)
+from .fields import ObjectIDField
 
 
 # Entry serializer
 class EntrySerializer(serializers.ModelSerializer):
-    _id = ObjectIDField()
+    _id = ObjectIDField(read_only=True)
     data = serializers.JSONField()
 
     class Meta:
@@ -26,7 +18,7 @@ class EntrySerializer(serializers.ModelSerializer):
 
 
 class StreamSerializer(serializers.ModelSerializer):
-    _id = ObjectIDField()
+    _id = ObjectIDField(read_only=True)
     fields = serializers.JSONField(validators=[FieldsValueValidator])
 
     class Meta:
