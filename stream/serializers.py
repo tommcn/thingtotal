@@ -1,4 +1,5 @@
 
+import bson
 from rest_framework import serializers
 
 from .models import Stream, Entry
@@ -15,6 +16,12 @@ class EntrySerializer(serializers.ModelSerializer):
         model = Entry
         fields = ("_id", "data")
         read_only_fields = ("_id",)
+
+    def create(self, validated_data):
+        stream_pk = self.context['view'].kwargs['stream_pk']
+        s = Stream.objects.get(pk=bson.ObjectId(stream_pk))
+        validated_data['stream'] = s
+        return super().create(validated_data)
 
 
 class StreamSerializer(serializers.ModelSerializer):

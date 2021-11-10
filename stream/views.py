@@ -20,7 +20,7 @@ class StreamViewset(viewsets.ModelViewSet):
 
 
 class EntryViewset(viewsets.ModelViewSet):
-    queryset = Entry.objects.none()
+    queryset = Entry.objects.all()
     serializer_class = EntrySerializer
 
     def get_queryset(self):
