@@ -1,10 +1,11 @@
-
 import bson
+import jsonschema
+from jsonschema import validate
 from rest_framework import serializers
 
-from .models import Stream, Entry
-from .validators import FieldsValueValidator
 from .fields import ObjectIDField
+from .models import Entry, Stream
+from .validators import FieldsValueValidator
 
 
 # Entry serializer
@@ -18,10 +19,22 @@ class EntrySerializer(serializers.ModelSerializer):
         read_only_fields = ("_id",)
 
     def create(self, validated_data):
-        stream_pk = self.context['view'].kwargs['stream_pk']
+        stream_pk = self.context["view"].kwargs["stream_pk"]
         s = Stream.objects.get(pk=bson.ObjectId(stream_pk))
-        validated_data['stream'] = s
+        validated_data["stream"] = s
         return super().create(validated_data)
+
+    def validate(self, attrs):
+        stream_pk = self.context["view"].kwargs["stream_pk"]
+        s = Stream.objects.get(pk=bson.ObjectId(stream_pk))
+        try:
+            _ = validate(instance=attrs["data"], schema=s.fields)
+        except jsonschema.exceptions.ValidationError as e:
+            raise serializers.ValidationError(
+                f"The value provided ({attrs['data']}) did not match the schema: {s.fields}"
+            ) from e
+
+        return super().validate(attrs)
 
 
 class StreamSerializer(serializers.ModelSerializer):

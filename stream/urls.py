@@ -6,16 +6,8 @@ from .views import EntryViewset, StreamViewset
 router = DefaultRouter()
 router.register(r"stream", StreamViewset, basename="stream")
 
-entries_router = routers.NestedDefaultRouter(
-    router,
-    r"stream",
-    lookup="stream"
-)
-entries_router.register(
-    r"entries",
-    EntryViewset,
-    basename="stream-entries"
-)
+entries_router = routers.NestedDefaultRouter(router, r"stream", lookup="stream")
+entries_router.register(r"entries", EntryViewset, basename="stream-entries")
 
 urlpatterns = router.urls
 urlpatterns += entries_router.urls

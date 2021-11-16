@@ -1,6 +1,6 @@
 import bson
-from rest_framework import viewsets
 from django.shortcuts import get_object_or_404
+from rest_framework import viewsets
 
 from stream.models import Entry, Stream
 from stream.serializers import EntrySerializer, StreamSerializer
