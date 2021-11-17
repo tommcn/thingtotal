@@ -1,6 +1,7 @@
 import bson
 from django.http.response import Http404
 from django.shortcuts import get_object_or_404
+from django.views.generic.base import TemplateView
 from rest_framework import viewsets
 
 from stream.models import Entry, Stream
@@ -36,3 +37,11 @@ class EntryViewset(viewsets.ModelViewSet):
         queryset = self.get_queryset()
         obj = get_object_or_404(queryset, pk=bson.ObjectId(self.kwargs["pk"]))
         return obj
+
+class StreamView(TemplateView):
+    template_name = "stream/stream.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["streams"] = Stream.objects.all()
+        return context
