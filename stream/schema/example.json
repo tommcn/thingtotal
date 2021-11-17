@@ -1,0 +1,41 @@
+{
+    "$id": "http://example.com/example.json",
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "additionalProperties": true,
+    "default": {},
+    "description": "The root schema comprises the entire JSON document.",
+    "examples": [
+        {
+            "temp": 12,
+            "time": 12999839
+        }
+    ],
+    "properties": {
+        "temp": {
+            "$id": "#/properties/temp",
+            "default": 0,
+            "description": "An explanation about the purpose of this instance.",
+            "examples": [
+                12
+            ],
+            "title": "The temp schema",
+            "type": "integer"
+        },
+        "time": {
+            "$id": "#/properties/time",
+            "default": 0,
+            "description": "An explanation about the purpose of this instance.",
+            "examples": [
+                12999839
+            ],
+            "title": "The time schema",
+            "type": "integer"
+        }
+    },
+    "required": [
+        "time",
+        "temp"
+    ],
+    "title": "The root schema",
+    "type": "object"
+}
