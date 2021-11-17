@@ -19,6 +19,7 @@ from django.urls import include, path
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("api/", include(("stream.urls", "stream"), namespace="stream")),
+    path("api/", include(("stream.urls-api", "stream"), namespace="stream")),
+    path("", include(("stream.urls", "stream"), namespace="stream-ui")),
     path("__debug__/", include(debug_toolbar.urls)),
 ]
