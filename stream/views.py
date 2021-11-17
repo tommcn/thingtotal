@@ -1,4 +1,5 @@
 import bson
+from django.http.response import Http404
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
 
@@ -24,7 +25,10 @@ class EntryViewset(viewsets.ModelViewSet):
     serializer_class = EntrySerializer
 
     def get_queryset(self):
-        s = Stream.objects.get(pk=bson.ObjectId(self.kwargs["stream_pk"]))
+        try:
+            s = Stream.objects.get(pk=bson.ObjectId(self.kwargs["stream_pk"]))
+        except Stream.DoesNotExist:
+            raise Http404("Stream does not exist")
         objs = Entry.objects.filter(stream=s)
         return objs
 

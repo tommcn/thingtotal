@@ -2,6 +2,7 @@ import bson
 import jsonschema
 from jsonschema import validate
 from rest_framework import serializers
+from django.http import Http404
 
 from .fields import ObjectIDField
 from .models import Entry, Stream
@@ -26,7 +27,10 @@ class EntrySerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         stream_pk = self.context["view"].kwargs["stream_pk"]
-        s = Stream.objects.get(pk=bson.ObjectId(stream_pk))
+        try:
+            s = Stream.objects.get(pk=bson.ObjectId(stream_pk))
+        except Stream.DoesNotExist:
+            raise Http404("Stream does not exist")
         try:
             _ = validate(instance=attrs["data"], schema=s.fields)
         except jsonschema.exceptions.ValidationError as e:

@@ -1,12 +1,12 @@
 """
 lmao copilot wrote all of the test cases from function names
 """
-import bson
 import json
 
-from django.test import TestCase, Client
+import bson
+from django.test import Client, TestCase
 
-from .models import Stream
+from .models import Entry, Stream
 
 
 # Create your tests here.
@@ -144,7 +144,15 @@ class TestStream(TestCase):
         res = self.client.get(f"/api/stream/{s._id}/")
 
         self.assertEquals(res.status_code, 200)
-        self.assertEquals(res.json(), {"_id": str(s._id), "name": "test_stream", "description": "test stream", "fields": schema})
+        self.assertEquals(
+            res.json(),
+            {
+                "_id": str(s._id),
+                "name": "test_stream",
+                "description": "test stream",
+                "fields": schema,
+            },
+        )
 
     def test_get_stream_with_invalid_id(self):
         res = self.client.get(f"/api/stream/{bson.ObjectId()}/")
@@ -162,4 +170,104 @@ class TestStream(TestCase):
         res = self.client.get("/api/stream/")
 
         self.assertEquals(res.status_code, 200)
-        self.assertEquals(res.json(), [{"_id": str(s._id), "name": "test_stream", "description": "test stream", "fields": schema}])
+        self.assertEquals(
+            res.json(),
+            [
+                {
+                    "_id": str(s._id),
+                    "name": "test_stream",
+                    "description": "test stream",
+                    "fields": schema,
+                }
+            ],
+        )
+
+
+class TestEntry(TestCase):
+    def setUp(self):
+        self.client = Client()
+        with open("stream/schema/example.json") as f:
+            schema = json.load(f)
+
+        s = Stream.objects.create(
+            name="test_stream", description="test stream", fields=schema
+        )
+        self.stream_id = s._id
+
+    def test_create_entry(self):
+        res = self.client.post(
+            f"/api/stream/{self.stream_id}/entries/",
+            {"data": {"time": 0, "temp": 0}},
+            content_type="application/json",
+        )
+
+        self.assertEquals(res.status_code, 201)
+        self.assertEquals(
+            Entry.objects.filter(stream_id=self.stream_id).count(), 1
+        )
+
+    def test_create_entry_with_invalid_data(self):
+        res = self.client.post(
+            f"/api/stream/{self.stream_id}/entries/",
+            {"data": "invalid json"},
+            content_type="application/json",
+        )
+
+        self.assertEquals(res.status_code, 400)
+        self.assertEquals(
+            Entry.objects.filter(stream_id=self.stream_id).count(), 0
+        )
+
+    def test_create_entry_with_invalid_data_type(self):
+        res = self.client.post(
+            f"/api/stream/{self.stream_id}/entries/",
+            {"data": [True]},
+            content_type="application/json",
+        )
+
+        self.assertEquals(res.status_code, 400)
+        self.assertEquals(
+            Entry.objects.filter(stream_id=self.stream_id).count(), 0
+        )
+
+    def test_create_entry_with_invalid_stream_id(self):
+        res = self.client.post(
+            f"/api/stream/{bson.ObjectId()}/entries/",
+            {"data": {"time": 0, "temp": 0}},
+            content_type="application/json",
+        )
+        self.assertEquals(res.status_code, 404)
+        self.assertEquals(Entry.objects.all().count(), 0)
+
+    def test_get_entries_empty(self):
+        res = self.client.get(f"/api/stream/{self.stream_id}/entries/")
+
+        self.assertEquals(res.status_code, 200)
+        self.assertEquals(res.json(), [])
+
+    def test_get_entries(self):
+        with open("stream/schema/example.json") as f:
+            schema = json.load(f)
+
+        s = Stream.objects.create(
+            name="test_stream", description="test stream", fields=schema
+        )
+
+        e1 = Entry.objects.create(stream_id=s._id, data={"time": 0, "temp": 0})
+        e2 = Entry.objects.create(stream_id=s._id, data={"time": 1, "temp": 1})
+
+        res = self.client.get(f"/api/stream/{s._id}/entries/")
+        self.assertEquals(res.status_code, 200)
+        self.assertEquals(
+            res.json(),
+            [
+                {"_id": str(e1._id), "data": {"time": 0, "temp": 0}},
+                {"_id": str(e2._id), "data": {"time": 1, "temp": 1}},
+            ],
+        )
+
+    def test_get_entries_with_invalid_stream_id(self):
+        res = self.client.get(f"/api/stream/{bson.ObjectId()}/entries/")
+
+        self.assertEquals(res.status_code, 404)
+        self.assertEquals(Entry.objects.all().count(), 0)
