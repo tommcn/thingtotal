@@ -37,11 +37,3 @@ class EntryViewset(viewsets.ModelViewSet):
         queryset = self.get_queryset()
         obj = get_object_or_404(queryset, pk=bson.ObjectId(self.kwargs["pk"]))
         return obj
-
-class StreamView(TemplateView):
-    template_name = "stream/stream.html"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["streams"] = Stream.objects.all()
-        return context
