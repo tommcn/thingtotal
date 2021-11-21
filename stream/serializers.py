@@ -1,8 +1,8 @@
 import bson
 import jsonschema
+from django.http import Http404
 from jsonschema import validate
 from rest_framework import serializers
-from django.http import Http404
 
 from .fields import ObjectIDField
 from .models import Entry, Stream

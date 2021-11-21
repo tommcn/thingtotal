@@ -202,9 +202,7 @@ class TestEntry(TestCase):
         )
 
         self.assertEquals(res.status_code, 201)
-        self.assertEquals(
-            Entry.objects.filter(stream_id=self.stream_id).count(), 1
-        )
+        self.assertEquals(Entry.objects.filter(stream_id=self.stream_id).count(), 1)
 
     def test_create_entry_with_invalid_data(self):
         res = self.client.post(
@@ -214,9 +212,7 @@ class TestEntry(TestCase):
         )
 
         self.assertEquals(res.status_code, 400)
-        self.assertEquals(
-            Entry.objects.filter(stream_id=self.stream_id).count(), 0
-        )
+        self.assertEquals(Entry.objects.filter(stream_id=self.stream_id).count(), 0)
 
     def test_create_entry_with_invalid_data_type(self):
         res = self.client.post(
@@ -226,9 +222,7 @@ class TestEntry(TestCase):
         )
 
         self.assertEquals(res.status_code, 400)
-        self.assertEquals(
-            Entry.objects.filter(stream_id=self.stream_id).count(), 0
-        )
+        self.assertEquals(Entry.objects.filter(stream_id=self.stream_id).count(), 0)
 
     def test_create_entry_with_invalid_stream_id(self):
         res = self.client.post(
