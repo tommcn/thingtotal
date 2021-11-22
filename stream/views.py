@@ -1,7 +1,6 @@
 import bson
 from django.http.response import Http404
 from django.shortcuts import get_object_or_404
-from django.views.generic.base import TemplateView
 from rest_framework import viewsets
 
 from stream.models import Entry, Stream
